@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fudanuniversity.cms.repository.mapper.CmsSectionMapper">
+<!--    返回结果集-->
+    <resultMap id="CmsSectionMap" type="com.fudanuniversity.cms.repository.entity.CmsSection">
+        <result column="id" property="id"/>
+        <result column="date" property="date"/>
+        <result column="name" property="name"/>
+        <result column="stu_id" property="stuId"/>
+        <result column="topic" property="topic"/>
+        <result column="section_file" property="sectionFile"/>
+        <result column="section_filename" property="sectionFileName"/>
+        <result column="section_filetype" property="sectionFileType"/>
+        <result column="is_file" property="isFile"/>
+        <result column="paper_rec" property="paperRec"/>
+    </resultMap>
+
+<!--    字段信息-->
+    <sql id="_field_list">
+        `id`, `date`, `name`, `stu_id`, `topic`, `section_filename`, `section_filetype`, `is_file`, `paper_rec`
+    </sql>
+
+<!--    值信息-->
+    <sql id="_field_list_value">
+        #{id}, #{date}, #{name}, #{stuId}, #{topic}, #{sectionFileName}, #{sectionFileType}, #{isFile}, #{paperRec}
+    </sql>
+
+<!--    普通条件查询-->
+    <sql id="_common_where">
+        <if test="id != null">
+            AND `id` = #{id}
+        </if>
+        <if test="date != null">
+            AND `date` = #{date}
+        </if>
+        <if test="name != null">
+            AND `name` = #{name}
+        </if>
+        <if test="stuId != null">
+            AND `stu_id` = #{stuId}
+        </if>
+        <if test="topic != null">
+            AND `topic` = #{topic}
+        </if>
+        <if test="isFile != null">
+            AND `is_file` = #{isFile}
+        </if>
+    </sql>
+
+<!--    排序-->
+    <sql id="_common_sort">
+        <if test="sorts != null">
+            ORDER By `date` desc
+        </if>
+    </sql>
+
+    <insert id="saveSection" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        `cms_section`(`date`, `name`, `stu_id`, `topic`, `section_file`, `section_filename`, `section_filetype`, `is_file`, `paper_rec`)
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{date}, #{name}, #{stuId}, #{topic}, #{sectionFile}, #{sectionFileName}, #{sectionFileType}, #{isFile}, #{paperRec}
+        </trim>
+    </insert>
+
+    <update id="updateById">
+        UPDATE `cms_section`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sectionFile != null">
+                `section_file` = #{sectionFile},
+            </if>
+            <if test="sectionFileName != null">
+                `section_filename` = #{sectionFileName},
+            </if>
+            <if test="sectionFileType != null">
+                `section_filetype` = #{sectionFileType},
+            </if>
+            <if test="isFile != null">
+                `is_file` = #{isFile},
+            </if>
+            <if test="paperRec != null">
+                `paper_rec` = #{paperRec},
+            </if>
+            <if test="topic != null">
+                `topic` = #{topic},
+            </if>
+        </trim>
+        WHERE `id` = #{id}
+        LIMIT 1
+    </update>
+
+    <delete id="deleteById">
+        <![CDATA[
+        DELETE FROM `cms_section` WHERE `id` = #{id} LIMIT 1
+        ]]>
+    </delete>
+
+    <select id="selectCountByParam" parameterType="map" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM `cms_section`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+    </select>
+
+    <select id="selectListByParam" parameterType="map" resultMap="CmsSectionMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_section`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+        <include refid="_common_sort"/>
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="queryDownloadSectionFile" parameterType="java.lang.Long" resultMap="CmsSectionMap">
+        SELECT `section_file`, `section_filename`, `section_filetype`
+        FROM `cms_section` WHERE `id` = #{id}
+        LIMIT 1
+    </select>
+
+    <select id="selectByDate" parameterType="java.util.Date" resultMap="CmsSectionMap">
+        SELECT `date` FROM `cms_section` WHERE `date` = #{date}
+        LIMIT 1
+    </select>
+
+
+</mapper>

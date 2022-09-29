@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.fudanuniversity.cms.repository.mapper.CmsStudyPlanStageMapper">
+
+    <!-- 返回结果集 -->
+    <resultMap id="CmsStudyPlanStageMap" type="com.fudanuniversity.cms.repository.entity.CmsStudyPlanStage">
+        <result column="id" property="id"/>
+        <result column="plan_id" property="planId"/>
+        <result column="term" property="term"/>
+        <result column="index" property="index"/>
+        <result column="end_date" property="endDate"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+    </resultMap>
+
+    <!-- 字段列表信息 -->
+    <sql id="_field_list">
+        `id`, `plan_id`, `term`, `index`, `end_date`, `create_time`,  `modify_time`
+    </sql>
+
+    <!-- 值列表信息 -->
+    <sql id="_value_list">
+        #{id}, #{planId}, #{term}, #{index}, #{endDate}, #{createTime},  #{modifyTime}
+    </sql>
+
+    <!-- 普通条件查询 -->
+    <sql id="_common_where">
+        <if test="id != null">
+            AND `id` = #{id}
+        </if>
+        <if test="idList != null and idList.size() > 0">
+            AND `id` IN
+            <foreach collection="idList" item="id"
+                     open="( " separator=" , " close=" )">
+                #{id}
+            </foreach>
+        </if>
+        <if test="planId != null">
+            AND `plan_id` = #{planId}
+        </if>
+        <if test="term != null">
+            AND `term` = #{term}
+        </if>
+        <if test="index != null">
+            AND `index` = #{index}
+        </if>
+        <if test="endDate != null">
+            AND `end_date` = #{endDate}
+        </if>
+        <if test="eltCreateTime != null">
+            <![CDATA[
+            AND `create_time` <= #{eltCreateTime}
+            ]]>
+        </if>
+        <if test="egtCreateTime != null">
+            <![CDATA[
+            AND `create_time` >= #{egtCreateTime}
+            ]]>
+        </if>
+        <if test="eltModifyTime != null">
+            <![CDATA[
+            AND `modify_time` <= #{eltModifyTime}
+            ]]>
+        </if>
+        <if test="egtModifyTime != null">
+            <![CDATA[
+            AND `modify_time` >= #{egtModifyTime}
+            ]]>
+        </if>
+    </sql>
+
+    <!-- 通用排序 -->
+    <sql id="_common_sorts">
+        <if test="sorts != null">
+            ORDER BY
+            <foreach collection="sorts" item="item" separator=",">
+                `${item.columnName}` ${item.sortMode.mode}
+            </foreach>
+        </if>
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            `cms_study_plan_stage`(`plan_id`, `term`, `index`, `end_date`, `create_time`, `modify_time`)
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{planId}, #{term}, #{index}, #{endDate}, #{createTime}, #{modifyTime}
+        </trim>
+    </insert>
+
+    <insert id="bulkUpsert" parameterType="list">
+        INSERT INTO
+            `cms_study_plan_stage`(`plan_id`, `term`, `index`, `end_date`, `create_time`, `modify_time`)
+        VALUES
+        <foreach collection="list" item="data" separator=",">
+            (#{data.planId}, #{data.term}, #{data.index}, #{data.endDate}, #{data.createTime}, #{data.modifyTime})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+       `plan_id` = VALUES(`plan_id`), 
+       `term` = VALUES(`term`), 
+       `index` = VALUES(`index`), 
+       `end_date` = VALUES(`end_date`), 
+       `create_time` = `create_time`, 
+       `modify_time` = VALUES(`modify_time`)
+    </insert>
+
+    <update id="updateById">
+        UPDATE `cms_study_plan_stage`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="planId != null">
+                `plan_id` = #{planId},
+            </if>
+            <if test="term != null">
+                `term` = #{term},
+            </if>
+            <if test="index != null">
+                `index` = #{index},
+            </if>
+            <if test="endDate != null">
+                `end_date` = #{endDate},
+            </if>
+            <if test="createTime != null">
+                `create_time` = #{createTime},
+            </if>
+            <if test="modifyTime != null">
+                `modify_time` = #{modifyTime},
+            </if>
+        </trim>
+        WHERE `id` = #{id}
+        LIMIT 1
+    </update>
+
+    <delete id="deleteById">
+        <![CDATA[
+        DELETE FROM `cms_study_plan_stage` WHERE `id` = #{id} LIMIT 1
+        ]]>
+    </delete>
+
+    <delete id="deleteByPlanId">
+        <![CDATA[
+        DELETE FROM `cms_study_plan_stage` WHERE `plan_id` = #{planId}
+        ]]>
+    </delete>
+
+    <select id="selectListByParam" parameterType="map" resultMap="CmsStudyPlanStageMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_study_plan_stage`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+        <include refid="_common_sorts"/>
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="selectCountByParam" parameterType="map" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM `cms_study_plan_stage`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+    </select>
+</mapper>

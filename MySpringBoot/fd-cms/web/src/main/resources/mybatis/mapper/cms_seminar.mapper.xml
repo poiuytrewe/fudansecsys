@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.fudanuniversity.cms.repository.mapper.CmsSeminarMapper">
+
+    <!-- 返回结果集 -->
+    <resultMap id="CmsSeminarMap" type="com.fudanuniversity.cms.repository.entity.CmsSeminar">
+        <result column="id" property="id"/>
+        <result column="date" property="date"/>
+        <result column="group_id" property="groupId"/>
+        <result column="speaker_name" property="speakerName"/>
+        <result column="speaker_stuid" property="speakerStuId"/>
+        <result column="file" property="file"/>
+        <result column="file_name" property="fileName"/>
+        <result column="file_type" property="fileType"/>
+        <result column="is_file" property="isFile"/>
+        <result column="modify_time" property="modifyTime"/>
+    </resultMap>
+
+    <!-- 字段列表信息 -->
+    <sql id="_field_list">
+        `id`, `date`, `group_id`, `speaker_name`, `speaker_stuid`, `file_name`, `is_file`, `modify_time`
+    </sql>
+
+    <!-- 值列表信息 -->
+    <sql id="_value_list">
+        #{id}, #{date}, #{groupId}, #{speakerName}, #{speakerStuId}, #{fileName}, #{isFile}, #{modifyTime}
+    </sql>
+
+    <!-- 普通条件查询 -->
+    <sql id="_common_where">
+        <if test="id != null">
+            AND `id` = #{id}
+        </if>
+        <if test="idList != null and idList.size() > 0">
+            AND `id` IN
+            <foreach collection="idList" item="id"
+                     open="( " separator=" , " close=" )">
+                #{id}
+            </foreach>
+        </if>
+        <if test="date != null">
+            AND `date` = #{date}
+        </if>
+        <if test="groupId != null">
+            AND `group_id` = #{groupId}
+        </if>
+        <if test="speakerName != null">
+            AND `speaker_name` = #{speakerName}
+        </if>
+        <if test="speakerStuId != null">
+            AND `speaker_stuid` = #{speakerStuId}
+        </if>
+        <if test="fileName != null">
+            AND `file_name` = #{fileName}
+        </if>
+        <if test="isFile != null">
+            AND `is_file` = #{isFile}
+        </if>
+        <if test="modifyTime != null">
+            AND `modify_time` = #{modifyTime}
+        </if>
+    </sql>
+
+    <!-- 通用排序 -->
+    <sql id="_common_sorts">
+        <if test="sorts != null">
+            ORDER BY
+<!--            <foreach collection="sorts" item="item" separator=",">-->
+<!--                `${item.columnName}` ${item.sortMode.mode}-->
+<!--            </foreach>-->
+            `date` desc
+        </if>
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            `cms_seminar`(`date`, `group_id`, `speaker_name`, `speaker_stuid`, `file`, `file_name`, `file_type`, `is_file`, `modify_time`)
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{date}, #{groupId}, #{speakerName}, #{speakerStuId}, #{file}, #{fileName}, #{fileType}, #{isFile}, #{modifyTime}
+        </trim>
+    </insert>
+
+    <insert id="bulkUpsert" parameterType="list">
+        INSERT INTO
+            `cms_seminar`(`speaker_id`, `date`, `theme`, `link`, `description`, `create_time`, `modify_time`)
+        VALUES
+        <foreach collection="list" item="data" separator=",">
+            (#{data.speakerId}, #{data.date}, #{data.theme}, #{data.link}, #{data.description}, #{data.createTime}, #{data.modifyTime})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+       `speaker_id` = VALUES(`speaker_id`), 
+       `date` = VALUES(`date`), 
+       `theme` = VALUES(`theme`), 
+       `link` = VALUES(`link`), 
+       `description` = VALUES(`description`), 
+       `create_time` = `create_time`, 
+       `modify_time` = VALUES(`modify_time`)
+    </insert>
+
+    <update id="updateById">
+        UPDATE `cms_seminar`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="date != null">
+                `date` = #{date},
+            </if>
+            <if test="groupId != null">
+                `group_id` = #{groupId}
+            </if>
+            <if test="speakerName != null">
+                `speaker_name` = #{speakerName},
+            </if>
+            <if test="speakerStuId != null">
+                `speaker_stuid` = #{speakerStuId},
+            </if>
+            <if test="file != null">
+                `file` = #{file},
+            </if>
+            <if test="fileName != null">
+                `file_name` = #{fileName},
+            </if>
+            <if test="fileType != null">
+                `file_type` = #{fileType},
+            </if>
+            <if test="isFile != null">
+                `is_file` = #{isFile},
+            </if>
+            <if test="modifyTime != null">
+                `modify_time` = #{modifyTime},
+            </if>
+        </trim>
+        WHERE `id` = #{id}
+        LIMIT 1
+    </update>
+
+    <delete id="deleteById">
+        <![CDATA[
+        DELETE FROM `cms_seminar` WHERE `id` = #{id} LIMIT 1
+        ]]>
+    </delete>
+
+    <select id="selectListByParam" parameterType="map" resultMap="CmsSeminarMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_seminar`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+        <include refid="_common_sorts"/>
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="selectCountByParam" parameterType="map" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM `cms_seminar`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+    </select>
+
+    <select id="selectFile" parameterType="java.lang.Long" resultMap="CmsSeminarMap">
+        SELECT `file`, `file_name`, `file_type` FROM `cms_seminar` WHERE `id` = #{id}
+        LIMIT 1
+    </select>
+</mapper>

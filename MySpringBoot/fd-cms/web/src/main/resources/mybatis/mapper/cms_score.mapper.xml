@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.fudanuniversity.cms.repository.mapper.CmsScoreMapper">
+    <!--返回结果集-->
+    <resultMap id="CmsScoreMap" type="com.fudanuniversity.cms.repository.entity.CmsScore">
+        <result column="id" property="id"/>
+        <result column="year" property="year"/>
+        <result column="season" property="season"/>
+        <result column="stu_id" property="stuId"/>
+        <result column="stu_name" property="stuName"/>
+        <result column="stu_type" property="stuType"/>
+        <result column="score" property="score"/>
+        <result column="mentor" property="mentor"/>
+        <result column="comment" property="comment"/>
+        <result column="tea_comment" property="teaComment"/>
+    </resultMap>
+
+    <!--字段列表信息-->
+    <sql id="_field_list">
+        `id`, `year`, `season`, `stu_id`, `stu_name`, `stu_type`, `score`, `mentor`, `comment`, `tea_comment`
+    </sql>
+
+    <!--值列表信息-->
+    <sql id="_value_list">
+        #{id}, #{year}, #{season}, #{stuId}, #{stuName}, #{stuType}, #{score}, #{mentor}, #{comment}, #{teaComment}
+    </sql>
+
+    <!--排序-->
+    <sql id="_common_sorts">
+        <if test="sorts != null">
+            ORDER BY
+            `year` asc, `season` asc
+        </if>
+    </sql>
+
+    <!--普通条件查询-->
+    <sql id="_common_where">
+        <if test="id != null">
+            AND `id` = #{id}
+        </if>
+        <if test="year != null">
+            AND `year` = #{year}
+        </if>
+        <if test="season != null">
+            AND `season` = #{season}
+        </if>
+        <if test="stuId != null">
+            AND `stu_id` = #{stuId}
+        </if>
+        <if test="stuName != null">
+            AND `stu_name` = #{stuName}
+        </if>
+        <if test="stuType != null">
+            AND `stu_type` = #{stuType}
+        </if>
+        <if test="score != null">
+            AND `score` = #{score}
+        </if>
+        <if test="mentor != null">
+            AND `mentor` = #{mentor}
+        </if>
+        <if test="comment != null">
+            AND `comment` = #{comment}
+        </if>
+        <if test="teaComment != null">
+            AND `tea_comment` = #{teaComment}
+        </if>
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            `cms_score`(`year`, `season`, `stu_id`, `stu_name`, `stu_type`, `score`, `mentor`, `comment`, `tea_comment`)
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{year}, #{season}, #{stuId}, #{stuName}, #{stuType}, #{score}, #{mentor}, #{comment}, #{teaComment}
+        </trim>
+    </insert>
+
+    <select id="selectCountByParam" parameterType="map" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM `cms_score`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+    </select>
+
+    <select id="selectListByParam" parameterType="map" resultMap="CmsScoreMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_score`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+        ORDER BY `stu_id` ASC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="selectLastScore" parameterType="map" resultType="Integer">
+       SELECT
+        `score`
+        FROM `cms_score`
+        WHERE `stu_id` = #{stuId} AND `year` = #{year} AND `season` = #{season}
+    </select>
+
+    <select id="selectASCListByParam" parameterType="map" resultMap="CmsScoreMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_score`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+        ORDER BY `score` ASC, `stu_id` ASC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="selectDESCListByParam" parameterType="map" resultMap="CmsScoreMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_score`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+        ORDER By `score` DESC, `stu_id` ASC
+        LIMIT #{offset}, #{limit}
+    </select>
+    
+    <select id="queryScoreVital" parameterType="map" resultType="Integer">
+        SELECT COUNT(*) FROM `cms_score` WHERE `stu_id` = #{stuId} AND `score` = #{score}
+    </select>
+
+    <update id="updateById">
+        UPDATE `cms_score`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="id != null">
+                `id`=#{id},
+            </if>
+            <if test="year != null">
+                `year`=#{year},
+            </if>
+            <if test="season != null">
+                `season`=#{season},
+            </if>
+            <if test="stuId != null">
+                `stu_id`=#{stuId},
+            </if>
+            <if test="score != null">
+                `score`=#{score},
+            </if>
+            <if test="mentor != null">
+                `mentor`=#{mentor},
+            </if>
+            <if test="comment != null">
+                `comment`= #{comment},
+            </if>
+            <if test="teaComment != null">
+                `tea_comment` = #{teaComment},
+            </if>
+        </trim>
+        WHERE `id` = #{id}
+        LIMIT 1
+    </update>
+
+    <delete id="deleteById">
+        <![CDATA[
+        DELETE FROM `cms_score` WHERE `id` = #{id} LIMIT 1
+        ]]>
+    </delete>
+
+    <select id="queryScoreDateList" resultMap="CmsScoreMap">
+        SELECT DISTINCT `year`, `season` FROM `cms_score` ORDER BY `year` desc, `season` desc
+    </select>
+
+    <select id="selectUndoneStuId" resultType="String">
+        SELECT `stu_id` FROM `cms_score` WHERE `year` = #{year} AND `season` = #{season}
+    </select>
+</mapper>

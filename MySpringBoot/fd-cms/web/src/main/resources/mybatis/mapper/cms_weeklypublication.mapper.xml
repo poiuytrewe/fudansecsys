@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fudanuniversity.cms.repository.mapper.CmsWeeklyPublicationMapper">
+    
+    <resultMap id="CmsWeeklyPublicationMap" type="com.fudanuniversity.cms.repository.entity.CmsWeeklyPublication">
+        <result column="id" property="id"/>
+        <result column="stu_name" property="stuName"/>
+        <result column="stu_id" property="stuId"/>
+        <result column="target" property="target"/>
+        <result column="outlined_achievements" property="outlinedAchievements"/>
+        <result column="achievements" property="achievements"/>
+        <result column="plan" property="plan"/>
+        <result column="week" property="week"/>
+        <result column="score" property="score"/>
+        <result column="comment" property="comment"/>
+        <result column="temp_comment" property="tempComment"/>
+        <result column="is_read" property="isRead"/>
+        <result column="date" property="date"/>
+    </resultMap>
+
+    <sql id="_field_list">
+        `id`, `stu_name`, `stu_id`, `target`, `outlined_achievements`, `achievements`, `plan`, `week`, `score`, `comment`, `temp_comment`, `is_read`, `date`
+    </sql>
+
+    <sql id="_field_list_value">
+        #{id}, #{stuName}, #{stuId}, #{target}, #{outlinedAchievements}, #{achievements}, #{plan}, #{week}, #{score}, #{comment}, #{tempComment}, #{isRead}, #{date}
+    </sql>
+
+    <sql id="_common_where">
+        <if test="id != null">
+            AND `id` = #{id}
+        </if>
+        <if test="stuName != null">
+            AND `stu_name` = #{stuName}
+        </if>
+        <if test="stuId != null">
+            AND `stu_id` = #{stuId}
+        </if>
+        <if test="target != null">
+            AND `target` = #{target}
+        </if>
+        <if test="outlinedAchievements != null">
+            AND `outlined_achievements` = #{outlinedAchievements}
+        </if>
+        <if test="achievements != null">
+            AND `achievements` = #{achievements}
+        </if>
+        <if test="plan != null">
+            AND `plan` = #{plan}
+        </if>
+        <if test="week != null">
+            AND `week` = #{week}
+        </if>
+        <if test="score != null">
+            AND `score` = #{score}
+        </if>
+        <if test="comment != null">
+            AND `comment` = #{comment}
+        </if>
+        <if test="tempComment != null">
+            AND `temp_comment` = #{tempComment}
+        </if>
+        <if test="isRead != null">
+            AND `is_read` = #{isRead}
+        </if>
+        <if test="date != null">
+            AND `date` = #{date}
+        </if>
+    </sql>
+
+    <select id="selectCountByParam" parameterType="String" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM `cms_weeklypublication`
+        WHERE `stu_id` = #{stuId}
+    </select>
+
+    <select id="selectWeekCountByParam" parameterType="map" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM `cms_weeklypublication`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+    </select>
+
+    <select id="selectListByParam" parameterType="map" resultMap="CmsWeeklyPublicationMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_weeklypublication`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+        ORDER BY `week` DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="selectLastByParam" parameterType="map" resultMap="CmsWeeklyPublicationMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_weeklypublication`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+        LIMIT 1
+    </select>
+
+    <insert id="insertPublication" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            `cms_weeklypublication`(`stu_name`, `stu_id`, `target`, `outlined_achievements`, `achievements`, `plan`, `week`, `is_read`, `date`)
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{stuName}, #{stuId}, #{target}, #{outlinedAchievements}, #{achievements}, #{plan}, #{week}, #{isRead}, #{date}
+        </trim>
+    </insert>
+
+    <select id="selectFile" parameterType="java.lang.Long" resultMap="CmsWeeklyPublicationMap">
+        SELECT `weekly_publication`, `file_name`, `file_type` FROM `cms_weeklypublication`
+        WHERE `id` = #{id} LIMIT 1
+    </select>
+
+    <delete id="deletePublication">
+        DELETE FROM `cms_weeklypublication`
+        WHERE `id` = #{id}
+        LIMIT 1
+    </delete>
+
+    <update id="updateById">
+        UPDATE `cms_weeklypublication`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="target != null">
+                `target` = #{target},
+            </if>
+            <if test="outlinedAchievements != null">
+                `outlined_achievements` = #{outlinedAchievements},
+            </if>
+            <if test="achievements != null">
+                `achievements` = #{achievements},
+            </if>
+            <if test="plan != null">
+                `plan` = #{plan},
+            </if>
+            <if test="week != null">
+                `week` = #{week},
+            </if>
+            <if test="comment != null">
+                `comment` = #{comment},
+            </if>
+            <if test="tempComment != null">
+                `temp_comment` = #{tempComment},
+            </if>
+            <if test="score != null">
+                `score` = #{score},
+            </if>
+            <if test="isRead != null">
+                `is_read` = #{isRead},
+            </if>
+            <if test="date != null">
+                `date` = #{date},
+            </if>
+        </trim>
+        WHERE `id` = #{id}
+        LIMIT 1
+    </update>
+
+</mapper>

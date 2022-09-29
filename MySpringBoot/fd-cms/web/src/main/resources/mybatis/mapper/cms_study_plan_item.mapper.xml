@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.fudanuniversity.cms.repository.mapper.CmsStudyPlanItemMapper">
+
+    <!-- 返回结果集 -->
+    <resultMap id="CmsStudyPlanAllocationMap" type="com.fudanuniversity.cms.repository.entity.CmsStudyPlanItem">
+        <result column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="plan_id" property="planId"/>
+        <result column="plan_stage_id" property="planStageId"/>
+        <result column="plan_work_id" property="planWorkId"/>
+        <result column="plan_work_start_date" property="planWorkStartDate"/>
+        <result column="plan_work_end_date" property="planWorkEndDate"/>
+        <result column="plan_work_delay" property="planWorkDelay"/>
+        <result column="finished" property="finished"/>
+        <result column="finished_date" property="finishedDate"/>
+        <result column="remark" property="remark"/>
+        <result column="deleted" property="deleted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+    </resultMap>
+
+    <resultMap id="CmsStudyPlanInfoMap" type="com.fudanuniversity.cms.repository.query.CmsStudyPlanItemInfo">
+        <result column="user_id" property="userId"/>
+        <result column="plan_id" property="planId"/>
+        <result column="total" property="total"/>
+        <result column="unfinished" property="unfinished"/>
+        <result column="delayUnfinished" property="delayUnfinished"/>
+        <result column="overtimeUnfinished" property="overtimeUnfinished"/>
+        <result column="finished" property="finished"/>
+        <result column="delayFinished" property="delayFinished"/>
+        <result column="overtimeFinished" property="overtimeFinished"/>
+    </resultMap>
+
+    <!-- 字段列表信息 -->
+    <sql id="_field_list">
+        `id`, `user_id`, `plan_id`, `plan_stage_id`, `plan_work_id`, `plan_work_start_date`, `plan_work_end_date`, `plan_work_delay`, `finished`, `finished_date`, `remark`, `deleted`, `create_time`,  `modify_time`
+    </sql>
+
+    <!-- 值列表信息 -->
+    <sql id="_value_list">
+        #{id}, #{userId}, #{planId}, #{planStageId}, #{planWorkId}, #{planWorkStartDate}, #{planWorkEndDate}, #{planWorkDelay}, #{finished}, #{finishedDate}, #{remark}, #{deleted}, #{createTime},  #{modifyTime}
+    </sql>
+
+    <!-- 普通条件查询 -->
+    <sql id="_common_where">
+        <if test="id != null">
+            AND `id` = #{id}
+        </if>
+        <if test="idList != null and idList.size() > 0">
+            AND `id` IN
+            <foreach collection="idList" item="id"
+                     open="( " separator=" , " close=" )">
+                #{id}
+            </foreach>
+        </if>
+        <if test="userId != null">
+            AND `user_id` = #{userId}
+        </if>
+        <if test="userIdList != null and userIdList.size() > 0">
+            AND `user_id` IN
+            <foreach collection="userIdList" item="userId"
+                     open="( " separator=" , " close=" )">
+                #{userId}
+            </foreach>
+        </if>
+        <if test="planId != null">
+            AND `plan_id` = #{planId}
+        </if>
+        <if test="planIdList != null and planIdList.size() > 0">
+            AND `plan_id` IN
+            <foreach collection="planIdList" item="planId"
+                     open="( " separator=" , " close=" )">
+                #{planId}
+            </foreach>
+        </if>
+        <if test="planStageId != null">
+            AND `plan_stage_id` = #{planStageId}
+        </if>
+        <if test="planWorkId != null">
+            AND `plan_work_id` = #{planWorkId}
+        </if>
+        <if test="planWorkStartDate != null">
+            AND `plan_work_start_date` = #{planWorkStartDate}
+        </if>
+        <if test="planWorkEndDate != null">
+            AND `plan_work_end_date` = #{planWorkEndDate}
+        </if>
+        <if test="planWorkDelay != null">
+            AND `plan_work_delay` = #{planWorkDelay}
+        </if>
+        <if test="finished != null">
+            AND `finished` = #{finished}
+        </if>
+        <if test="finishedDate != null">
+            AND `finished_date` = #{finishedDate}
+        </if>
+        <if test="remark != null">
+            AND `remark` = #{remark}
+        </if>
+        <if test="deleted != null">
+            AND `deleted` = #{deleted}
+        </if>
+        <if test="eltCreateTime != null">
+            <![CDATA[
+            AND `create_time` <= #{eltCreateTime}
+            ]]>
+        </if>
+        <if test="egtCreateTime != null">
+            <![CDATA[
+            AND `create_time` >= #{egtCreateTime}
+            ]]>
+        </if>
+        <if test="eltModifyTime != null">
+            <![CDATA[
+            AND `modify_time` <= #{eltModifyTime}
+            ]]>
+        </if>
+        <if test="egtModifyTime != null">
+            <![CDATA[
+            AND `modify_time` >= #{egtModifyTime}
+            ]]>
+        </if>
+    </sql>
+
+    <!-- 通用排序 -->
+    <sql id="_common_sorts">
+        <if test="sorts != null">
+            ORDER BY
+            <foreach collection="sorts" item="item" separator=",">
+                `${item.columnName}` ${item.sortMode.mode}
+            </foreach>
+        </if>
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        `cms_study_plan_item`(`user_id`, `plan_id`, `plan_stage_id`, `plan_work_id`, `plan_work_start_date`, `plan_work_end_date`, `plan_work_delay`, `finished`, `finished_date`, `remark`, `deleted`, `create_time`, `modify_time`)
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{userId}, #{planId}, #{planStageId}, #{planWorkId}, #{planWorkStartDate}, #{planWorkEndDate}, #{planWorkDelay}, #{finished}, #{finishedDate}, #{remark}, #{deleted}, #{createTime}, #{modifyTime}
+        </trim>
+    </insert>
+
+    <insert id="bulkUpsert" parameterType="list">
+        INSERT INTO
+        `cms_study_plan_item`(`user_id`, `plan_id`, `plan_stage_id`, `plan_work_id`, `plan_work_start_date`, `plan_work_end_date`, `plan_work_delay`, `finished`, `finished_date`, `remark`, `deleted`, `create_time`, `modify_time`)
+        VALUES
+        <foreach collection="list" item="data" separator=",">
+            (#{data.userId}, #{data.planId}, #{data.planStageId}, #{data.planWorkId}, #{data.planWorkStartDate}, #{data.planWorkEndDate}, #{data.planWorkDelay}, #{data.finished}, #{data.finishedDate}, #{data.remark}, #{data.deleted}, #{data.createTime}, #{data.modifyTime})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        `user_id` = VALUES(`user_id`),
+        `plan_id` = VALUES(`plan_id`),
+        `plan_stage_id` = VALUES(`plan_stage_id`),
+        `plan_work_id` = VALUES(`plan_work_id`),
+        `plan_work_start_date` = VALUES(`plan_work_start_date`),
+        `plan_work_end_date` = VALUES(`plan_work_end_date`),
+        `plan_work_delay` = `plan_work_delay`,
+        `finished` = `finished`,
+        `finished_date` = `finished_date`,
+        `remark` = `remark`,
+        `deleted` = VALUES(`deleted`),
+        `create_time` = `create_time`,
+        `modify_time` = VALUES(`modify_time`)
+    </insert>
+
+    <update id="updateById">
+        UPDATE `cms_study_plan_item`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">
+                `user_id` = #{userId},
+            </if>
+            <if test="planId != null">
+                `plan_id` = #{planId},
+            </if>
+            <if test="planStageId != null">
+                `plan_stage_id` = #{planStageId},
+            </if>
+            <if test="planWorkId != null">
+                `plan_work_id` = #{planWorkId},
+            </if>
+            <if test="planWorkStartDate != null">
+                `plan_work_start_date` = #{planWorkStartDate},
+            </if>
+            <if test="planWorkEndDate != null">
+                `plan_work_end_date` = #{planWorkEndDate},
+            </if>
+            <if test="planWorkDelay != null">
+                `plan_work_delay` = #{planWorkDelay},
+            </if>
+            <if test="finished != null">
+                `finished` = #{finished},
+            </if>
+                `finished_date` = #{finishedDate},
+            <if test="remark != null">
+                `remark` = #{remark},
+            </if>
+            <if test="deleted != null">
+                `deleted` = #{deleted},
+            </if>
+            <if test="createTime != null">
+                `create_time` = #{createTime},
+            </if>
+            <if test="modifyTime != null">
+                `modify_time` = #{modifyTime},
+            </if>
+        </trim>
+        WHERE `id` = #{id}
+        LIMIT 1
+    </update>
+
+    <delete id="deleteById">
+        <![CDATA[
+        DELETE FROM `cms_study_plan_item` WHERE `id` = #{id} LIMIT 1
+        ]]>
+    </delete>
+
+    <update id="deleteByQuery" parameterType="map" >
+        <![CDATA[
+        UPDATE `cms_study_plan_item`
+        SET
+        `deleted` = `id`,
+        `modify_time` = #{modifyTime}
+        ]]>
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <if test="idList != null and idList.size() > 0">
+                AND `id` IN
+                <foreach collection="idList" item="id"
+                         open="( " separator=" , " close=" )">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="userId != null">
+                AND `user_id` = #{userId}
+            </if>
+            <if test="userIdList != null and userIdList.size() > 0">
+                AND `user_id` IN
+                <foreach collection="userIdList" item="userId"
+                         open="( " separator=" , " close=" )">
+                    #{userId}
+                </foreach>
+            </if>
+            <if test="planId != null">
+                AND `plan_id` = #{planId}
+            </if>
+        </trim>
+    </update>
+
+    <select id="selectListByParam" parameterType="map" resultMap="CmsStudyPlanAllocationMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_study_plan_item`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+        <include refid="_common_sorts"/>
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="selectInfoByParam" parameterType="map" resultMap="CmsStudyPlanInfoMap">
+        <![CDATA[
+        SELECT
+            plan_id,
+            user_id,
+            COUNT(*) 'total',
+            SUM(IF(`finished` = 0, 1, 0)) 'unfinished',
+            SUM(IF(`finished` = 0 AND CURRENT_DATE <= plan_work_end_date, 1, 0)) 'regularUnfinished',
+            SUM(IF(`finished` = 0 AND plan_work_end_date < CURRENT_DATE AND CURRENT_DATE <= DATE_ADD(plan_work_end_date, INTERVAL plan_work_delay DAY), 1, 0)) 'delayUnfinished',
+            SUM(IF(`finished` = 0 AND CURRENT_DATE > DATE_ADD(plan_work_end_date, INTERVAL plan_work_delay DAY), 1, 0)) 'overtimeUnfinished',
+            SUM(IF(`finished` = 1, 1, 0)) 'finished',
+            SUM(IF(`finished` = 1 AND finished_date <= plan_work_end_date, 1, 0)) 'regularFinished',
+            SUM(IF(`finished` = 1 AND plan_work_end_date < CURRENT_DATE AND finished_date <= DATE_ADD(plan_work_end_date, INTERVAL plan_work_delay DAY), 1, 0)) 'delayFinished',
+            SUM(IF(`finished` = 1 AND finished_date > DATE_ADD(plan_work_end_date, INTERVAL plan_work_delay DAY), 1, 0)) 'overtimeFinished'
+        FROM cms_study_plan_item
+        ]]>
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+        GROUP BY plan_id, user_id
+    </select>
+
+    <select id="selectCountByParam" parameterType="map" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM `cms_study_plan_item`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+    </select>
+</mapper>

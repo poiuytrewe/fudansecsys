@@ -1,0 +1,101 @@
+version: "3.5"
+
+
+services:
+    # 启动redis组件服务
+    redis:
+        image: redis:4.0
+        container_name: redis
+        command: redis-server /etc/redis/redis.conf
+        restart: unless-stopped
+        ports:
+          - 26379:6379
+        volumes:
+          - ./redis/data:/data
+          - ./redis/redis.conf:/etc/redis/redis.conf
+
+    # 启动mysql组件服务
+    mysql:
+        image: mysql:8.0.25         #https://hub.docker.com
+        command: 
+          --default-authentication-plugin=mysql_native_password 
+          --character-set-server=utf8mb4 
+          --collation-server=utf8mb4_unicode_ci 
+          --init-connect='SET NAMES UTF8MB4;'
+        container_name: mysql
+        restart: unless-stopped
+        ports:
+          - 23306:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: FuDan!123
+            MYSQL_DATABASE: fd_cms
+            MYSQL_USER: fd_cms
+            MYSQL_PASSWORD: FuDan!123
+        volumes:
+            - ./mysql/data:/var/lib/mysql           # 挂载数据目录
+            - ./mysql/conf.d:/etc/mysql/conf.d      # 挂载配置文件目录
+            - ./mysql/my.cnf:/etc/my.cnf            # 挂载my.cnf
+        healthcheck:
+            test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+            timeout: 20s
+            retries: 10
+            # docker ps # 找到对应容器ID
+            # docker exec -it ${container_id} /bin/sh
+            # mysql -h 127.0.0.1 -u root -p
+            # alter user 'root'@'localhost' identified with mysql_native_password by 'FuDan!123';
+            # alter user 'root'@'%' identified with mysql_native_password by 'FuDan!123';
+
+    # 启动fd-cms组件服务(springboot应用)
+    fd-cms-01:
+        image: java:8
+        container_name: fd-cms-01                   # 指定容器名称
+        #restart: always                            # 重启机制，always相当于应用崩溃后自动重启
+        depends_on:
+          - redis
+          - mysql
+        volumes:
+          - ./app/fd-cms-01/fd-cms-web-1.0.0.jar:/opt/application/fd-cms-web-1.0.0.jar    # 本地jar包路径
+          - ./app/fd-cms-01/applogs:/data/applogs                                         # 挂载日志
+          - /etc/localtime:/etc/localtime                                       # 指定容器时间为宿主机时间
+        ports:
+          - 18888:18888 
+        environment:
+          - TZ="Asia/Shanghai"              # 指定时区
+        #启动容器后执行的命令
+        command: nohup java -Dspring.profiles.active=docker -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m  -Xms1024m -Xmx1024m -XX:+PrintGCDetails -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -jar /opt/application/fd-cms-web-1.0.0.jar >/dev/null 2>&1 & 
+
+    # 启动fd-cms组件服务(springboot应用)
+    fd-cms-02:
+        image: java:8
+        container_name: fd-cms-02                   # 指定容器名称
+        #restart: always                            # 重启机制，always相当于应用崩溃后自动重启
+        depends_on:
+          - redis
+          - mysql
+        volumes:
+          - ./app/fd-cms-02/fd-cms-web-1.0.0.jar:/opt/application/fd-cms-web-1.0.0.jar    # 本地jar包路径
+          - ./app/fd-cms-02/applogs:/data/applogs                                         # 挂载日志
+          - /etc/localtime:/etc/localtime                                       # 指定容器时间为宿主机时间
+        ports:
+          - 28888:18888
+        environment:
+          - TZ="Asia/Shanghai"              # 指定时区
+        #启动容器后执行的命令
+        command: nohup java -Dspring.profiles.active=docker -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=512m  -Xms1024m -Xmx1024m -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -jar /opt/application/fd-cms-web-1.0.0.jar >/dev/null 2>&1 &
+
+    nginx:
+        image: nginx:1.20.0
+        container_name: nginx
+        #restart: always
+        depends_on:
+          - fd-cms-01
+          - fd-cms-02
+        ports:
+          - 80:80
+        volumes:
+          - ./nginx/html:/usr/share/nginx/html
+          - ./nginx/conf.d:/etc/nginx/conf.d
+          - ./nginx/log:/var/log/nginx
+          - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+
+

@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.fudanuniversity.cms.repository.mapper.CmsUserMapper">
+
+    <!-- 返回结果集 -->
+    <resultMap id="CmsUserMap" type="com.fudanuniversity.cms.repository.entity.CmsUser">
+        <result column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="stu_id" property="stuId"/>
+        <result column="role_id" property="roleId"/>
+        <result column="isSystemMng" property="isSystemMng"/>
+        <result column="isTalkMng" property="isTalkMng"/>
+        <result column="isLabMng" property="isLabMng"/>
+        <result column="isPaperMng" property="isPaperMng"/>
+        <result column="isEducateMng" property="isEducateMng"/>
+        <result column="isDeviceMng" property="isDeviceMng"/>
+        <result column="name" property="name"/>
+        <result column="telephone" property="telephone"/>
+        <result column="email" property="email"/>
+        <result column="mentor" property="mentor"/>
+        <result column="leader" property="leader"/>
+        <result column="study_type" property="studyType"/>
+        <result column="keshuo" property="keshuo"/>
+        <result column="enroll_year" property="enrollYear"/>
+        <result column="enroll_date" property="enrollDate"/>
+        <result column="papers" property="papers"/>
+        <result column="patents" property="patents"/>
+        <result column="services" property="services"/>
+        <result column="projects" property="projects"/>
+        <result column="group_id" property="groupId"/>
+        <result column="status" property="status"/>
+        <result column="deleted" property="deleted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+    </resultMap>
+
+    <!-- 字段列表信息 -->
+    <sql id="_field_list">
+        `id`, `type`, `stu_id`, `role_id`, `isSystemMng`, `isTalkMng`, `isLabMng`, `isPaperMng`, `isEducateMng`, `isDeviceMng`, `name`, `telephone`, `email`, `mentor`, `leader`, `study_type`, `keshuo`, `enroll_year`, `enroll_date`, `papers`, `patents`, `services`, `projects`, `group_id`, `status`, `deleted`, `create_time`,  `modify_time`
+    </sql>
+
+    <!-- 值列表信息 -->
+    <sql id="_value_list">
+        #{id}, #{type}, #{stuId}, #{roleId}, #{isSystemMng}, #{isTalkMng}, #{isLabMng}, #{isPaperMng}, #{isEducateMng}, #{isDeviceMng}, #{name}, #{telephone}, #{email}, #{mentor}, #{leader}, #{studyType}, #{keshuo}, #{enrollYear}, #{enrollDate}, #{papers}, #{patents}, #{services}, #{projects}, #{groupId}, #{status}, #{deleted}, #{createTime},  #{modifyTime}
+    </sql>
+
+    <!-- 普通条件查询 -->
+    <sql id="_common_where">
+        <if test="id != null">
+            AND `id` = #{id}
+        </if>
+        <if test="type != null">
+            AND `type` = #{type}
+        </if>
+        <if test="stuId != null">
+            AND `stu_id` = #{stuId}
+        </if>
+        <if test="roleId != null">
+            AND `role_id` = #{roleId}
+        </if>
+        <if test="isSystemMng != null">
+            AND `isSystemMng` = #{isSystemMng}
+        </if>
+        <if test="isTalkMng != null">
+            AND `isTalkMng` = #{isTalkMng}
+        </if>
+        <if test="isLabMng != null">
+            AND `isLabMng` = #{isLabMng}
+        </if>
+        <if test="isPaperMng != null">
+            AND `isPaperMng` = #{isPaperMng}
+        </if>
+        <if test="isEducateMng != null">
+            AND `isEducateMng` = #{isEducateMng}
+        </if>
+        <if test="isDeviceMng != null">
+            AND `isDeviceMng` = #{isDeviceMng}
+        </if>
+
+        <if test="idList != null and idList.size() > 0">
+            AND `id` IN
+            <foreach collection="idList" item="id"
+                     open="( " separator=" , " close=" )">
+                #{id}
+            </foreach>
+        </if>
+
+        <if test="name != null">
+            AND `name` LIKE "%" #{name} "%"
+        </if>
+        <if test="telephone != null">
+            AND `telephone` = #{telephone}
+        </if>
+        <if test="email != null">
+            AND `email` = #{email}
+        </if>
+        <if test="mentor != null">
+            AND `mentor` = #{mentor}
+        </if>
+        <if test="leader != null">
+            AND `leader` = #{leader}
+        </if>
+        <if test="studyType != null">
+            AND `study_type` = #{studyType}
+        </if>
+        <if test="keshuo != null">
+            AND `keshuo` = #{keshuo}
+        </if>
+        <if test="enrollYear != null">
+            AND `enroll_year` = #{enrollYear}
+        </if>
+        <if test="enrollDate != null">
+            AND `enroll_date` = #{enrollDate}
+        </if>
+        <if test="papers != null">
+            AND `papers` = #{papers}
+        </if>
+        <if test="patents != null">
+            AND `patents` = #{patents}
+        </if>
+        <if test="services != null">
+            AND `services` = #{services}
+        </if>
+        <if test="projects != null">
+            AND `projects` = #{projects}
+        </if>
+        <if test="groupId !=null">
+            AND `group_id` = #{groupId}
+        </if>
+        <if test="status != null">
+            AND `status` = #{status}
+        </if>
+        <if test="deleted != null">
+            AND `deleted` = #{deleted}
+        </if>
+    </sql>
+
+    <!-- 通用排序 -->
+    <sql id="_common_sorts">
+        <if test="sorts != null">
+            ORDER BY
+<!--            <foreach collection="sorts" item="item" separator=",">-->
+<!--                `${item.columnName}` ${item.sortMode.mode}-->
+<!--            </foreach>-->
+            `type` desc, `stu_id` asc
+        </if>
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            `cms_user`(`type`, `stu_id`, `role_id`, `isSystemMng`, `isTalkMng`, `isLabMng`, `isPaperMng`, `isEducateMng`, `isDeviceMng`, `name`, `telephone`, `email`, `mentor`, `leader`, `study_type`, `keshuo`, `enroll_year`, `enroll_date`, `papers`, `patents`, `services`, `projects`, `group_id`, `status`, `deleted`, `create_time`, `modify_time`)
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{type}, #{stuId}, #{roleId}, #{isSystemMng}, #{isTalkMng}, #{isLabMng}, #{isPaperMng}, #{isEducateMng}, #{isDeviceMng}, #{name}, #{telephone}, #{email}, #{mentor}, #{leader}, #{studyType}, #{keshuo}, #{enrollYear}, #{enrollDate}, #{papers}, #{patents}, #{services}, #{projects}, #{groupId}, #{status}, #{deleted}, #{createTime}, #{modifyTime}
+        </trim>
+    </insert>
+
+    <update id="updateById">
+        UPDATE `cms_user`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null">
+                `type` = #{type},
+            </if>
+            <if test="stuId != null">
+                `stu_id` = #{stuId},
+            </if>
+            <if test="roleId != null">
+                `role_id` = #{roleId},
+            </if>
+            <if test="isSystemMng != null">
+                `isSystemMng` = #{isSystemMng},
+            </if>
+            <if test="isTalkMng != null">
+                `isTalkMng` = #{isTalkMng},
+            </if>
+            <if test="isLabMng != null">
+                `isLabMng` = #{isLabMng},
+            </if>
+            <if test="isPaperMng != null">
+                `isPaperMng` = #{isPaperMng},
+            </if>
+            <if test="isEducateMng != null">
+                `isEducateMng` = #{isEducateMng},
+            </if>
+            <if test="isDeviceMng != null">
+                `isDeviceMng` = #{isDeviceMng},
+            </if>
+            <if test="name != null">
+                `name` = #{name},
+            </if>
+            <if test="telephone != null">
+                `telephone` = #{telephone},
+            </if>
+            <if test="email != null">
+                `email` = #{email},
+            </if>
+            <if test="mentor != null">
+                `mentor` = #{mentor},
+            </if>
+            <if test="leader != null">
+                `leader` = #{leader},
+            </if>
+            <if test="studyType != null">
+                `study_type` = #{studyType},
+            </if>
+            <if test="keshuo != null">
+                `keshuo` = #{keshuo},
+            </if>
+            <if test="enrollYear != null">
+                `enroll_year` = #{enrollYear},
+            </if>
+            <if test="enrollDate != null">
+                `enroll_date` = #{enrollDate},
+            </if>
+            <if test="papers != null">
+                `papers` = #{papers},
+            </if>
+            <if test="patents != null">
+                `patents` = #{patents},
+            </if>
+            <if test="services != null">
+                `services` = #{services},
+            </if>
+            <if test="projects != null">
+                `projects` = #{projects},
+            </if>
+            <if test="groupId != null">
+                `group_id` = #{groupId},
+            </if>
+            <if test="status != null">
+                `status` = #{status},
+            </if>
+            <if test="deleted != null">
+                `deleted` = #{deleted},
+            </if>
+            <if test="createTime != null">
+                `create_time` = #{createTime},
+            </if>
+            <if test="modifyTime != null">
+                `modify_time` = #{modifyTime},
+            </if>
+        </trim>
+        WHERE `id` = #{id}
+        LIMIT 1
+    </update>
+
+    <delete id="deleteById">
+        <![CDATA[
+        DELETE FROM `cms_user` WHERE `id` = #{id} LIMIT 1
+        ]]>
+    </delete>
+
+    <select id="selectListByParam" parameterType="map" resultMap="CmsUserMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_user`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+        <include refid="_common_sorts"/>
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="selectStudentListByParam" parameterType="map" resultMap="CmsUserMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_user`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+            AND `type` &lt;&gt; 20
+        </trim>
+        ORDER BY `type` desc, `stu_id` asc
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="selectCountByParam" parameterType="map" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM `cms_user`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+    </select>
+
+    <select id="selectStudentCountByParam" parameterType="map" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM `cms_user`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+            AND `type` &lt;&gt; 20
+        </trim>
+    </select>
+
+    <select id="selectMentorStudentCountByParam"  resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM `cms_user`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <if test="mentor != null">
+                AND `mentor` = #{mentor}
+            </if>
+            <if test="type != null">
+                AND `type` = #{type}
+            </if>
+            <if test="name != null">
+                AND `name` LIKE "%" #{name} "%"
+            </if>
+            AND `type` &lt;&gt; 20
+        </trim>
+    </select>
+
+    <select id="selectMentorStudentListByParam"  resultMap="CmsUserMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_user`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <if test="mentor != null">
+                AND `mentor` = #{mentor}
+            </if>
+            <if test="type != null">
+                AND `type` = #{type}
+            </if>
+        </trim>
+        ORDER BY `type` desc, `stu_id` asc
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <update id="resetGroupId">
+        UPDATE `cms_user` SET `group_id`=0,  `isTalkMng`=0 WHERE `type` &lt;&gt; 20
+    </update>
+
+    <select id="selectStudentList" parameterType="map" resultMap="CmsUserMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_user`
+        WHERE `type` &lt;&gt; 20
+        <if test="type != null">
+            AND `type` = #{type}
+        </if>
+    </select>
+
+    <select id="queryTeacherStudentList" parameterType="String" resultMap="CmsUserMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_user` WHERE `mentor` = #{stuName} AND `type` &lt;&gt; 20
+        ORDER BY `type` DESC
+    </select>
+
+    <select id="queryLeaderStudentList" parameterType="String" resultMap="CmsUserMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_user` WHERE `leader` = #{stuName} AND `type` &lt;&gt; 20
+        ORDER BY `type` DESC
+    </select>
+
+</mapper>

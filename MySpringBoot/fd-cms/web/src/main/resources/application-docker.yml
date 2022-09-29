@@ -1,0 +1,43 @@
+# swagger
+springfox:
+  documentation:
+    open-api:
+      v3:
+        path: /docs/api/v3
+    swagger-ui:
+      enabled: true
+      base-url: /docs/api
+# logging(logback)
+logging:
+  config: classpath:config/logback-dev.xml
+## 数据库
+spring:
+  datasource:
+    #Hikari 连接池配置 ------ 详细配置请访问：https://github.com/brettwooldridge/HikariCP
+    #type: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/fd_cms?zeroDateTimeBehavior=convertToNull&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: fd_cms
+    password: FuDan!123
+    hikari.minimum-idle: 5
+    hikari.idle-timeout: 180000
+    hikari.maximum-pool-size: 10
+    hikari.auto-commit: true
+    hikari.pool-name: FbAccountHikariCP
+    hikari.max-lifetime: 1800000
+    hikari.connection-timeout: 30000
+    hikari.connection-test-query: SELECT 1
+  redis:
+    database: 0
+    host: redis
+    port: 6379
+    #password:
+    timeout: 5000
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: 10000
+        max-idle: 8
+        min-idle: 0
+  session:
+    store-type: redis

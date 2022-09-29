@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.fudanuniversity.cms.repository.mapper.CmsStudyPlanProcessMapper">
+
+    <resultMap id="CmsStudyPlanProcessMap" type="com.fudanuniversity.cms.repository.entity.CmsStudyPlanProcess">
+        <result column="id" property="id"/>
+        <result column="stu_name" property="stuName"/>
+        <result column="stu_id" property="stuId"/>
+        <result column="type" property="type"/>
+        <result column="tiny_category" property="tinyCategory"/>
+        <result column="category" property="category"/>
+        <result column="mission_status" property="missionStatus"/>
+        <result column="is_delay" property="isDelay"/>
+        <result column="year" property="year"/>
+        <result column="month" property="month"/>
+        <result column="wish_year" property="wishYear"/>
+        <result column="wish_month" property="wishMonth"/>
+        <result column="alert" property="alert"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+    <sql id="_field_list">
+        `id`, `stu_name`, `stu_id`, `type`, `tiny_category`, `category`, `mission_status`, `is_delay`, `year`, `month`, `wish_year`, `wish_month`, `alert`
+    </sql>
+
+    <sql id="_value_list">
+        #{id}, #{stuName}, #{stuId}, #{type}, #{tinyCategory}, #{category}, #{missionStatus}, #{isDelay}, #{year}, #{month}, #{wishYear}, #{wishMonth}, #{alert}
+    </sql>
+
+    <sql id="_common_where">
+        <if test="id != null">
+            AND `id` = #{id}
+        </if>
+        <if test="stuName != null">
+            AND `stu_name` = #{stuName}
+        </if>
+        <if test="stuId != null">
+            AND `stu_id` = #{stuId}
+        </if>
+        <if test="type != null">
+            AND `type` = #{type}
+        </if>
+        <if test="category != null">
+            AND `category` = #{category}
+        </if>
+        <if test="tinyCategory != null">
+            AND `tiny_category` = #{tinyCategory}
+        </if>
+        <if test="missionStatus != null">
+            AND `mission_status` = #{missionStatus}
+        </if>
+        <if test="isDelay != null">
+            AND `is_delay` = #{isDelay}
+        </if>
+        <if test="year != null">
+            AND `year` = #{year}
+        </if>
+        <if test="month != null">
+            AND `month` = #{month}
+        </if>
+        <if test="wishYear != null">
+            AND `wish_year` = #{wishYear}
+        </if>
+        <if test="wishMonth != null">
+            AND `wish_month` = #{wishMonth}
+        </if>
+        <if test="alert != null">
+            AND `alert` = #{alert}
+        </if>
+        <if test="createTime != null">
+            AND `create_time` = #{createTime}
+        </if>
+    </sql>
+
+    <select id="selectCountByParam" parameterType="map" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM `cms_study_plan_process`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        `cms_study_plan_process`(`stu_name`, `stu_id`, `type`, `mission_status`, `category`, `tiny_category`, `is_delay`, `year`, `month`, `wish_year`, `wish_month`, `alert`, `create_time`)
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{stuName}, #{stuId}, #{type}, #{missionStatus}, #{category}, #{tinyCategory}, #{isDelay}, #{year}, #{month}, #{wishYear}, #{wishMonth}, #{alert}, #{createTime}
+        </trim>
+    </insert>
+
+    <select id="selectListByParam" parameterType="map" resultMap="CmsStudyPlanProcessMap">
+        SELECT
+        <include refid="_field_list"/>
+            FROM `cms_study_plan_process`
+            <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+                <include refid="_common_where"/>
+            </trim>
+        ORDER BY `year` ASC, `month` ASC, `month` = 9 DESC, `month` = 10 DESC, `month` = 11 DESC, `month` = 12 DESC
+    </select>
+
+    <update id="updateById">
+        UPDATE `cms_study_plan_process`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null">
+                `type` = #{type},
+            </if>
+            <if test="missionStatus != null">
+                `mission_status` = #{missionStatus},
+            </if>
+            <if test="category != null">
+                `category` = #{category},
+            </if>
+            <if test="tinyCategory != null">
+                `tiny_category` = #{tinyCategory},
+            </if>
+            <if test="isDelay != null">
+                `is_delay` = #{isDelay},
+            </if>
+            <if test="year != null">
+                `year` = #{year},
+            </if>
+            <if test="month != null">
+                `month` = #{month},
+            </if>
+            <if test="wishYear != null">
+                `wish_year` = #{wishYear},
+            </if>
+            <if test="wishMonth != null">
+                `wish_month` = #{wishMonth},
+            </if>
+            <if test="alert != null">
+                `alert` = #{alert},
+            </if>
+        </trim>
+        WHERE `id` = #{id}
+        LIMIT 1
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM `cms_study_plan_process` WHERE `id` = #{id}
+        LIMIT 1
+    </delete>
+    
+    <update id="groupUpdateById" parameterType="java.util.List">
+        UPDATE `cms_study_plan_process` SET `mission_status` = 0
+        WHERE `id` in
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <update id="groupUpdateList" parameterType="java.util.List">
+        <foreach collection="list" item="item" open="" separator=";" close="">
+            UPDATE `cms_study_plan_process`
+            <trim prefix="SET" suffixOverrides=",">
+                <if test="item.year != null">
+                    `year` = #{item.year},
+                </if>
+                <if test="item.month != null">
+                    `month` = #{item.month},
+                </if>
+                <if test="item.count != null">
+                    `count` = #{item.count},
+                </if>
+            </trim>
+            WHERE id = #{item.id}
+        </foreach>
+    </update>
+
+    <select id="selectMissionStatus" parameterType="String" resultType="Integer">
+        SELECT COUNT(*) FROM `cms_study_plan_process`
+        WHERE `stu_id` = #{stuId} AND `is_delay` = 1
+    </select>
+
+    <select id="selectLateList" parameterType="map" resultMap="CmsStudyPlanProcessMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_study_plan_process`
+        WHERE `year` &lt; #{year} AND `mission_status` = 1 OR `year` = #{year} AND `month` &lt; #{month} AND `mission_status` = 1
+        OR `year` &lt; #{year} AND `mission_status` = 0 OR `year` = #{year} AND `month` &lt; #{month} AND `mission_status` = 0
+    </select>
+
+    <select id="getAllApprove" parameterType="String" resultMap="CmsStudyPlanProcessMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_study_plan_process`
+        WHERE `stu_id` = #{stuId} AND `mission_status` = 2
+    </select>
+
+    <select id="getAllDelay" parameterType="String" resultMap="CmsStudyPlanProcessMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_study_plan_process`
+        WHERE `stu_id` = #{stuId} AND `mission_status` = 4
+    </select>
+
+    <select id="selectApplyCount" parameterType="String" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM `cms_study_plan_process`
+        WHERE `stu_id` = #{stuId} AND `mission_status` = 2 OR `stu_id` = #{stuId} AND `mission_status` = 4
+    </select>
+
+</mapper>

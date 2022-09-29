@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fudanuniversity.cms.repository.mapper.CmsStudyPlanProcessCategoryMapper">
+    <resultMap id="CmsStudyPlanProcessCategoryMap" type="com.fudanuniversity.cms.repository.entity.CmsStudyPlanProcessCategory">
+        <result column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="study_type" property="studyType"/>
+        <result column="process_category" property="processCategory"/>
+        <result column="category_mission" property="categoryMission"/>
+        <result column="year" property="year"/>
+        <result column="month" property="month"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <sql id="_field_list">
+        `id`, `type`, `study_type`, `process_category`, `category_mission`, `year`, `month`, `create_time`
+    </sql>
+
+    <sql id="_value_list">
+        #{id}, #{type}, #{studyType}, #{processCategory}, #{categoryMission}, #{year}, #{month}, #{createTime}
+    </sql>
+
+    <sql id="_common_where">
+        <if test="id != null">
+            AND `id` = #{id}
+        </if>
+        <if test="type != null">
+            AND `type` = #{type}
+        </if>
+        <if test="studyType != null">
+            AND `study_type` = #{studyType}
+        </if>
+        <if test="processCategory != null">
+            AND `process_category` = #{processCategory}
+        </if>
+        <if test="categoryMission != null">
+            AND `category_mission` = #{categoryMission}
+        </if>
+        <if test="year != null">
+            AND `year` = #{year}
+        </if>
+        <if test="month != null">
+            AND `month` = #{month}
+        </if>
+        <if test="createTime != null">
+            AND `create_time` = #{createTime}
+        </if>
+    </sql>
+
+    <select id="getProcessCategory" parameterType="map" resultMap="CmsStudyPlanProcessCategoryMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_study_plan_process_category`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+        ORDER BY `year` ASC, `month` = 9 DESC, `month` = 10 DESC, `month` = 11 DESC, `month` = 12 DESC, `month` ASC
+    </select>
+
+    <insert id="addProcessCategory" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        `cms_study_plan_process_category`(`type`, `study_type`, `process_category`, `category_mission`, `year`, `month`, `create_time`)
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{type}, #{studyType}, #{processCategory}, #{categoryMission}, #{year}, #{month}, #{createTime}
+        </trim>
+    </insert>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM `cms_study_plan_process_category`
+        WHERE `id` = #{id}
+    </delete>
+
+    <update id="updateById" parameterType="map">
+        UPDATE `cms_study_plan_process_category`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null">
+                `type` = #{type},
+            </if>
+            <if test="studyType != null">
+                `study_type` = #{studyType},
+            </if>
+            <if test="processCategory != null">
+                `process_category` = #{processCategory},
+            </if>
+            <if test="categoryMission != null">
+                `category_mission` = #{categoryMission},
+            </if>
+            <if test="year != null">
+                `year` = #{year},
+            </if>
+            <if test="month != null">
+                `month` = #{month},
+            </if>
+        </trim>
+        WHERE `id` = #{id}
+    </update>
+
+    <delete id="resetProcessCategory" parameterType="map">
+        DELETE FROM `cms_study_plan_process_category`
+        WHERE `type` = #{type} AND `study_type` = #{studyType}
+    </delete>
+</mapper>

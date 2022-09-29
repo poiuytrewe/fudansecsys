@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.fudanuniversity.cms.repository.mapper.CmsLabPublishmentMapper">
+
+    <resultMap id="CmsLabPublishmentMap" type="com.fudanuniversity.cms.repository.entity.CmsLabPublishment">
+        <result column="id" property="id"/>
+        <result column="lab_name" property="labName"/>
+        <result column="lab_file_name" property="labFileName"/>
+        <result column="lab_type" property="labType"/>
+        <result column="lab_publisher" property="labPublisher"/>
+        <result column="lab_publisher_stuid" property="lanPublisherStuId"/>
+        <result column="date" property="date"/>
+    </resultMap>
+
+    <sql id="_field_list">
+        `id`, `lab_name`, `lab_file_name`, `lab_type`, `lab_publisher`, `lab_publisher_stuid`, `date`
+    </sql>
+
+    <sql id="_value_list">
+        #{id}, #{labName}, #{labFileName}, #{labType}, #{labPublisher}, #{labPublisherStuId}, #{date}
+    </sql>
+
+    <sql id="_common_where">
+        <if test="id != null">
+            AND `id` = #{id}
+        </if>
+        <if test="labName != null">
+            AND `lab_name` = #{labName}
+        </if>
+        <if test="labFileName != null">
+            AND `lab_file_name` = #{labFileName}
+        </if>
+        <if test="labType != null">
+            AND `lab_type` = #{labType}
+        </if>
+        <if test="labPublisher != null">
+            AND `lab_publisher` = #{labPublisher}
+        </if>
+        <if test="labPublisherStuId != null">
+            AND `lab_publisher_stuid` = #{labPublisherStuId}
+        </if>
+        <if test="date != null">
+            AND `date` = #{date}
+        </if>
+    </sql>
+
+    <select id="queryLabData" resultMap="CmsLabPublishmentMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_lab_publishment`
+    </select>
+
+    <delete id="deleteLabData">
+        DELETE FROM `cms_lab_publishment`
+        WHERE `id` = #{id}
+        LIMIT 1
+    </delete>
+</mapper>

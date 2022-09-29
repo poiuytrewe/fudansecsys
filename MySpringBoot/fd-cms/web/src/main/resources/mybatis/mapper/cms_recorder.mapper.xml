@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.fudanuniversity.cms.repository.mapper.CmsRecorderMapper">
+
+    <!-- 返回结果集 -->
+    <resultMap id="CmsRecorderMap" type="com.fudanuniversity.cms.repository.entity.CmsRecorder">
+        <result column="id" property="id"/>
+        <result column="date" property="date"/>
+        <result column="group_id" property="groupId"/>
+        <result column="recorder1_name" property="recorder1Name"/>
+        <result column="recorder2_name" property="recorder2Name"/>
+        <result column="summarizer_name" property="summarizerName"/>
+        <result column="summarizer_file" property="summarizerFile"/>
+        <result column="summarizerfile_name" property="summarizerFileName"/>
+        <result column="summarizerfile_type" property="summarizerFileType"/>
+        <result column="issummarizer_file" property="isSummarizerFile"/>
+        <result column="recorder" property="recorder"/>
+        <result column="recorder_file" property="recorderFile"/>
+        <result column="recorderfile_name" property="recorderFileName"/>
+        <result column="recorderfile_type" property="recorderFileType"/>
+        <result column="isrecorder_file" property="isRecorderFile"/>
+        <result column="base_score" property="baseScore"/>
+        <result column="is_battle" property="isBattle"/>
+        <result column="modify_time" property="modifyTime"/>
+    </resultMap>
+
+    <sql id="_info_field_list">
+        `id`, `date`, `group_id`, `recorder1_name`, `recorder2_name`, `summarizer_name`, `summarizerfile_name`, `issummarizer_file`, `recorder`, `recorderfile_name`, `isrecorder_file`, `base_score`, `is_battle`, `modify_time`
+    </sql>
+
+    <sql id="_info_value_list">
+        #{id}, #{date}, #{groupId}, #{recorder1Name}, #{recorder2Name}, #{summarizerName}, #{summarizerFile}, #{isSummarizerFile}, #{recorder}, #{recorderFile}, #{isRecorderFile}, #{baseScore}, #{isBattle}, #{modifyTime}
+    </sql>
+
+    <!-- 普通条件查询 -->
+    <sql id="_common_where">
+        <if test="id != null">
+            AND `id` = #{id}
+        </if>
+
+        <if test="date != null">
+            AND `date` = #{date}
+        </if>
+
+        <if test="groupId != null">
+            AND `group_id` = #{groupId}
+        </if>
+
+        <if test="recorder1Name != null">
+            AND `recorder1_name` = #{recorder1Name}
+        </if>
+
+        <if test="recorder2Name != null">
+            AND `recorder2_name` = #{recorder2Name}
+        </if>
+
+        <if test="summarizerName != null">
+            AND `summarizer_name` = #{summarizerName}
+        </if>
+
+        <if test="summarizerFileName != null">
+            AND `summarizerfile_name` = #{summarizerFileName}
+        </if>
+
+        <if test="recorder != null">
+            AND `recorder` = #{recorder}
+        </if>
+
+        <if test="recorderFileName != null">
+            AND `recorderfile_name` = #{recorderFileName}
+        </if>
+
+        <if test="isBattle != null">
+            AND `is_battle` = #{isBattle}
+        </if>
+    </sql>
+
+    <!-- 通用排序 -->
+    <sql id="_common_sorts">
+        <if test="sorts != null">
+            ORDER BY
+<!--            <foreach collection="sorts" item="item" separator=",">-->
+<!--                `${item.columnName}` ${item.sortMode.mode}-->
+<!--            </foreach>-->
+            `date` desc, `group_id` asc
+        </if>
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            `cms_recorder`(`date`, `group_id`, `recorder1_name`, `recorder2_name`, `summarizer_name`, `summarizer_file`, `summarizerfile_name`, `summarizerfile_type`, `issummarizer_file`, `recorder`, `recorder_file`, `recorderfile_name`, `recorderfile_type`, `isrecorder_file`, `base_score`, `is_battle`, `modify_time`)
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{date}, #{groupId}, #{recorder1Name}, #{recorder2Name}, #{summarizerName}, #{summarizerFile}, #{summarizerFileName}, #{summarizerFileType}, #{isSummarizerFile}, #{recorder}, #{recorderFile}, #{recorderFileName}, #{recorderFileType}, #{isRecorderFile}, #{baseScore}, #{isBattle}, #{modifyTime}
+        </trim>
+    </insert>
+
+    <update id="updateById">
+        UPDATE `cms_recorder`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="date != null">
+                `date` = #{date},
+            </if>
+            <if test="recorder1Name != null">
+                `recorder1_name` = #{recorder1Name},
+            </if>
+            <if test="recorder2Name != null">
+                `recorder2_name` = #{recorder2Name},
+            </if>
+            <if test="summarizerName != null">
+                `summarizer_name` = #{summarizerName},
+            </if>
+            <if test="summarizerFile != null">
+                `summarizer_file` = #{summarizerFile},
+            </if>
+            <if test="summarizerFileName != null">
+                `summarizerfile_name` = #{summarizerFileName},
+            </if>
+            <if test="summarizerFileType != null">
+                `summarizerfile_type` = #{summarizerFileType},
+            </if>
+            <if test="isSummarizerFile != null">
+                `issummarizer_file` = #{isSummarizerFile},
+            </if>
+            <if test="recorder != null">
+                `recorder` = #{recorder},
+            </if>
+            <if test="recorderFile != null">
+                `recorder_file` = #{recorderFile},
+            </if>
+            <if test="recorderFileName != null">
+                `recorderfile_name` = #{recorderFileName},
+            </if>
+            <if test="recorderFileType != null">
+                `recorderfile_type` = #{recorderFileType},
+            </if>
+            <if test="isRecorderFile != null">
+                `isrecorder_file` = #{isRecorderFile},
+            </if>
+            <if test="baseScore != null">
+                `base_score` = #{baseScore},
+            </if>
+            <if test="isBattle != null">
+                `is_battle` = #{isBattle},
+            </if>
+            <if test="modifyTime != null">
+                `modify_time` = #{modifyTime},
+            </if>
+        </trim>
+        WHERE `id` = #{id}
+        LIMIT 1
+    </update>
+
+    <delete id="deleteById">
+        <![CDATA[
+        DELETE FROM `cms_recorder` WHERE `id` = #{id} LIMIT 1
+        ]]>
+    </delete>
+
+    <select id="selectInfoListByParam" parameterType="map" resultMap="CmsRecorderMap">
+        SELECT
+        <include refid="_info_field_list"/>
+        FROM `cms_recorder`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+        <include refid="_common_sorts"/>
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="selectCountByParam" parameterType="map" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM `cms_recorder`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+    </select>
+
+    <select id="selectRecorderFile" parameterType="map" resultMap="CmsRecorderMap">
+        SELECT `recorder_file`,`recorderfile_name`,`recorderfile_type` FROM `cms_recorder` WHERE `id` = #{id}
+    </select>
+
+    <select id="selectSummarizerFile" parameterType="map" resultMap="CmsRecorderMap">
+        SELECT `summarizer_file`, `summarizerfile_name`, `summarizerfile_type` FROM `cms_recorder` WHERE `id` = #{id}
+    </select>
+</mapper>

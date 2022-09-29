@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.fudanuniversity.cms.repository.mapper.CmsStudyPlanMapper">
+
+    <!-- 返回结果集 -->
+    <resultMap id="CmsStudyPlanMap" type="com.fudanuniversity.cms.repository.entity.CmsStudyPlan">
+        <result column="id" property="id"/>
+        <result column="enroll_year" property="enrollYear"/>
+        <result column="reference_date" property="referenceDate"/>
+        <result column="name" property="name"/>
+        <result column="version" property="version"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+    </resultMap>
+
+    <!-- 字段列表信息 -->
+    <sql id="_field_list">
+        `id`, `enroll_year`, `reference_date`, `name`, `version`, `create_time`,  `modify_time`
+    </sql>
+
+    <!-- 值列表信息 -->
+    <sql id="_value_list">
+        #{id}, #{enrollYear}, #{referenceDate}, #{name}, #{version}, #{createTime},  #{modifyTime}
+    </sql>
+
+    <!-- 普通条件查询 -->
+    <sql id="_common_where">
+        <if test="id != null">
+            AND `id` = #{id}
+        </if>
+        <if test="idList != null and idList.size() > 0">
+            AND `id` IN
+            <foreach collection="idList" item="id"
+                     open="( " separator=" , " close=" )">
+                #{id}
+            </foreach>
+        </if>
+        <if test="enrollYear != null">
+            AND `enroll_year` = #{enrollYear}
+        </if>
+        <if test="referenceDate != null">
+            AND `reference_date` = #{referenceDate}
+        </if>
+        <if test="name != null">
+            AND `name` = #{name}
+        </if>
+        <if test="version != null">
+            AND `version` = #{version}
+        </if>
+        <if test="eltCreateTime != null">
+            <![CDATA[
+            AND `create_time` <= #{eltCreateTime}
+            ]]>
+        </if>
+        <if test="egtCreateTime != null">
+            <![CDATA[
+            AND `create_time` >= #{egtCreateTime}
+            ]]>
+        </if>
+        <if test="eltModifyTime != null">
+            <![CDATA[
+            AND `modify_time` <= #{eltModifyTime}
+            ]]>
+        </if>
+        <if test="egtModifyTime != null">
+            <![CDATA[
+            AND `modify_time` >= #{egtModifyTime}
+            ]]>
+        </if>
+    </sql>
+
+    <!-- 通用排序 -->
+    <sql id="_common_sorts">
+        <if test="sorts != null">
+            ORDER BY
+            <foreach collection="sorts" item="item" separator=",">
+                `${item.columnName}` ${item.sortMode.mode}
+            </foreach>
+        </if>
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            `cms_study_plan`(`enroll_year`, `reference_date`, `name`, `version`, `create_time`, `modify_time`)
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{enrollYear}, #{referenceDate}, #{name}, #{version}, #{createTime},  #{modifyTime}
+        </trim>
+    </insert>
+
+    <insert id="bulkUpsert" parameterType="list">
+        INSERT INTO
+        `cms_study_plan`(`enroll_year`, `reference_date`, `name`, `version`, `create_time`, `modify_time`)
+        VALUES
+        <foreach collection="list" item="data" separator=",">
+            (#{data.enrollYear}, #{data.referenceDate}, #{data.name}, #{data.version}, #{data.createTime}, #{data.modifyTime})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        `enroll_year` = VALUES(`enroll_year`),
+        `reference_date` = VALUES(`reference_date`),
+        `name` = VALUES(`name`),
+        `version` = VALUES(`version`),
+        `create_time` = `create_time`,
+        `modify_time` = VALUES(`modify_time`)
+    </insert>
+
+    <update id="updateById">
+        UPDATE `cms_study_plan`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="enrollYear != null">
+                `enroll_year` = #{enrollYear},
+            </if>
+            <if test="referenceDate != null">
+                `reference_date` = #{referenceDate},
+            </if>
+            <if test="name != null">
+                `name` = #{name},
+            </if>
+            <if test="version != null">
+                `version` = #{version},
+            </if>
+            <if test="createTime != null">
+                `create_time` = #{createTime},
+            </if>
+            <if test="modifyTime != null">
+                `modify_time` = #{modifyTime},
+            </if>
+        </trim>
+        WHERE `id` = #{id}
+        LIMIT 1
+    </update>
+
+    <delete id="deleteById">
+        <![CDATA[
+        DELETE FROM `cms_study_plan` WHERE `id` = #{id} LIMIT 1
+        ]]>
+    </delete>
+
+    <update id="increaseVersionById">
+        <![CDATA[
+        UPDATE `cms_study_plan` SET `version` = `version` + 1, `modify_time` = CURRENT_TIMESTAMP WHERE `id` = #{id} LIMIT 1
+        ]]>
+    </update>
+
+    <select id="selectListByParam" parameterType="map" resultMap="CmsStudyPlanMap">
+        SELECT
+        <include refid="_field_list"/>
+        FROM `cms_study_plan`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+        <include refid="_common_sorts"/>
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="selectCountByParam" parameterType="map" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM `cms_study_plan`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+    </select>
+</mapper>

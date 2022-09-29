@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.fudanuniversity.cms.repository.mapper.CmsArticleMapper">
+
+    <!-- 返回结果集 -->
+    <resultMap id="CmsArticleMap" type="com.fudanuniversity.cms.repository.entity.CmsArticle">
+        <result column="id" property="id"/>
+        <result column="date" property="date"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+    </resultMap>
+
+    <!-- 字段列表信息 -->
+    <sql id="_detail_field_list">
+        `id`, `date`, `title`, `content`
+    </sql>
+
+    <!-- 值列表信息 -->
+    <sql id="_value_list">
+        #{id}, #{date}, #{title}, #{content}
+    </sql>
+
+    <!-- 普通条件查询 -->
+    <sql id="_common_where">
+        <if test="id != null">
+            AND `id` = #{id}
+        </if>
+        <if test="date != null">
+            AND `date` = #{date}
+        </if>
+        <if test="title != null">
+            AND `title` = #{title}
+        </if>
+        <if test="content != null">
+            AND `content` = #{content}
+        </if>
+    </sql>
+
+    <!-- 通用排序 -->
+    <sql id="_common_sorts">
+        <if test="sorts != null">
+            ORDER BY
+<!--            <foreach collection="sorts" item="item" separator=",">-->
+<!--                `${item.columnName}` ${item.sortMode.mode}-->
+<!--            </foreach>-->
+            `date` desc
+        </if>
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            `cms_article`(`date`, `title`, `content`, `create_time`, `modify_time`)
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #{date}, #{title}, #{content}, #{createTime}, #{modifyTime}
+        </trim>
+    </insert>
+
+    <update id="updateById">
+        UPDATE `cms_article`
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="date != null">
+                `date` = #{date},
+            </if>
+            <if test="title != null">
+                `title` = #{title},
+            </if>
+            <if test="content != null">
+                `content` = #{content},
+            </if>
+            <if test="createTime != null">
+                `create_time` = #{createTime},
+            </if>
+            <if test="modifyTime != null">
+                `modify_time` = #{modifyTime},
+            </if>
+        </trim>
+        WHERE `id` = #{id}
+        LIMIT 1
+    </update>
+
+    <delete id="deleteById">
+        <![CDATA[
+        DELETE FROM `cms_article` WHERE `id` = #{id} LIMIT 1
+        ]]>
+    </delete>
+
+    <select id="selectInfoListByParam" parameterType="map" resultMap="CmsArticleMap">
+        SELECT
+        <include refid="_detail_field_list"/>
+        FROM `cms_article`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+        <include refid="_common_sorts"/>
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="selectCountByParam" parameterType="map" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM `cms_article`
+        <trim prefix="WHERE" prefixOverrides="AND" suffix="">
+            <include refid="_common_where"/>
+        </trim>
+    </select>
+
+    <select id="selectByDateForUpdate" parameterType="map" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM `cms_article` WHERE `date` = #{date} AND `id` &lt;&gt; #{id}
+    </select>
+
+    <select id="selectByDateForSave" parameterType="map" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM `cms_article` WHERE `date` = #{date}
+    </select>
+
+</mapper>
